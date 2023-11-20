@@ -2211,6 +2211,7 @@ def user_edit(request, user_id):
             "evaluations_contributing_to": evaluations_contributing_to,
             "has_due_evaluations": bool(user.get_sorted_due_evaluations()),
             "user_id": user_id,
+            "user_with_same_email": form.user_with_same_email,
         },
     )
 
@@ -2289,11 +2290,11 @@ class UserMergeSelectionView(FormView):
     form_class = UserMergeSelectionForm
     template_name = "staff_user_merge_selection.html"
 
-    def get_success_url(self):
+    def form_valid(self, form):
         return redirect(
             "staff:user_merge",
-            self.form.cleaned_data["main_user"].id,
-            self.form.cleaned_data["other_user"].id,
+            form.cleaned_data["main_user"].id,
+            form.cleaned_data["other_user"].id,
         )
 
 
