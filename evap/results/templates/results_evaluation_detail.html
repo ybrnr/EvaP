@@ -35,11 +35,11 @@
                 <div class="btn-switch btn-switch-light my-auto d-print-none">
                     <div class="btn-switch-label">{% trans 'General results' %}</div>
                     <div class="btn-switch btn-group">
-                        {% if user.is_staff and view == 'general_show_text' or is_contributor %}
+                        {% if user.is_staff and view_general == 'show' or is_contributor %}
                             <a
                                 href="{% if is_contributor %}{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general=show{% endif %}"
                                 role="button"
-                                class="btn btn-sm btn-light{% if view == 'export' %} active{% endif %}"
+                                class="btn btn-sm btn-light{% if view_general == 'show' %} active{% endif %}"
                                 data-bs-toggle="tooltip"
                                 data-bs-placement="bottom"
                                 title="{% blocktrans %}Tooltip shown{% endblocktrans %}"
@@ -51,7 +51,7 @@
                         <a
                             href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view=full"
                             role="button"
-                            class="btn btn-sm btn-light{% if view == 'full' %} active{% endif %}"
+                            class="btn btn-sm btn-light{% if view_general == 'hide' %} active{% endif %}"
                             data-bs-toggle="tooltip"
                             data-bs-placement="bottom"
                             title="{% trans 'Tooltip hidden' %}"

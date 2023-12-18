@@ -166,7 +166,7 @@ def evaluation_detail(request, semester_id, evaluation_id):
     semester = get_object_or_404(Semester, id=semester_id)
     evaluation = get_object_or_404(semester.evaluations, id=evaluation_id, course__semester=semester)
 
-    view, view_as_user, represented_users, contributor_id = evaluation_detail_parse_get_parameters(request, evaluation)
+    view_general, view, view_as_user, represented_users, contributor_id = evaluation_detail_parse_get_parameters(request, evaluation)
 
     evaluation_result = get_results(evaluation)
     remove_textanswers_that_the_user_must_not_see(evaluation_result, view_as_user, represented_users, view)
@@ -212,6 +212,7 @@ def evaluation_detail(request, semester_id, evaluation_id):
             view in ("export", "full") and (view_as_user.is_reviewer or is_responsible_or_contributor_or_delegate)
         ),
         "view": view,
+        "view_general": view_general,
         "view_as_user": view_as_user,
         "contributors_with_omitted_results": contributors_with_omitted_results,
         "contributor_id": contributor_id,
@@ -374,6 +375,10 @@ def add_warnings(evaluation, evaluation_result):
 def evaluation_detail_parse_get_parameters(request, evaluation):
     if not evaluation.can_results_page_be_seen_by(request.user):
         raise PermissionDenied
+    
+    view_general = request.GET.get("view_general", "show")
+    if view_general not in ["show", "hide"]:
+        view = "show"
 
     view = request.GET.get("view", "public" if request.user.is_reviewer else "full")
     if view not in ["public", "full", "export"]:
@@ -396,7 +401,7 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
     if not evaluation.can_publish_rating_results and view == "public":
         view = "full"
 
-    return view, view_as_user, represented_users, contributor_id
+    return view_general, view, view_as_user, represented_users, contributor_id
 
 
 def extract_evaluation_answer_data(request, evaluation):
