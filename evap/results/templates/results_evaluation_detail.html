@@ -58,40 +58,6 @@
                         >
                             {% trans 'Hide text answers' %}
                         </a>
-                        {% if not evaluation.can_publish_rating_results %}
-                            <button
-                                type="button"
-                                disabled
-                                class="btn btn-sm btn-light"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="bottom"
-                                title="{% blocktrans %}The results of this evaluation have not been published because it didn't get enough votes.{% endblocktrans %}"
-                            >
-                                {% if evaluation.course.is_private %}
-                                    {% trans 'Participant' %}
-                                {% else %}
-                                    {% trans 'Public' %}
-                                {% endif %}
-                            </button>
-                        {% else %}
-                            <a
-                                href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view=public"
-                                role="button"
-                                class="btn btn-sm btn-light{% if view == 'public' %} active{% endif %}"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="bottom"
-                                title="
-                                    {% if evaluation.course.is_private %}
-                                        {% trans 'Shows results available for the participants.' %}"
-                                        >
-                                        {% trans 'Participant' %}
-                                    {% else %}
-                                        {% trans 'Shows results available for everyone logged in.' %}"
-                                        >
-                                        {% trans 'Public' %}
-                                    {% endif %}
-                            </a>
-                        {% endif %}
                     </div>
                 </div>
                 <div class="btn-switch btn-switch-light my-auto d-print-none">
