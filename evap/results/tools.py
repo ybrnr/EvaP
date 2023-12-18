@@ -461,10 +461,17 @@ def can_textanswer_be_seen_by(
     represented_users: list[UserProfile],
     textanswer: TextAnswer,
     view: str,
+    view_general: str,
 ) -> bool:
     # pylint: disable=too-many-return-statements
     assert textanswer.review_decision in [TextAnswer.ReviewDecision.PRIVATE, TextAnswer.ReviewDecision.PUBLIC]
     contributor = textanswer.contribution.contributor
+
+    if(textanswer.contribution.is_general == True):
+        if(view_general == "show"): 
+            return True
+        else:
+            return False
 
     if view == "public":
         return False

@@ -166,10 +166,12 @@ def evaluation_detail(request, semester_id, evaluation_id):
     semester = get_object_or_404(Semester, id=semester_id)
     evaluation = get_object_or_404(semester.evaluations, id=evaluation_id, course__semester=semester)
 
+    #hier view_general added
     view_general, view, view_as_user, represented_users, contributor_id = evaluation_detail_parse_get_parameters(request, evaluation)
 
     evaluation_result = get_results(evaluation)
-    remove_textanswers_that_the_user_must_not_see(evaluation_result, view_as_user, represented_users, view)
+    #hier view_general added
+    remove_textanswers_that_the_user_must_not_see(evaluation_result, view_as_user, represented_users, view, view_general)
     exclude_empty_headings(evaluation_result)
     remove_empty_questionnaire_and_contribution_results(evaluation_result)
     add_warnings(evaluation, evaluation_result)
@@ -219,21 +221,22 @@ def evaluation_detail(request, semester_id, evaluation_id):
     }
     return render(request, "results_evaluation_detail.html", template_data)
 
-
-def remove_textanswers_that_the_user_must_not_see(evaluation_result, user, represented_users, view):
+#hier view_general added
+def remove_textanswers_that_the_user_must_not_see(evaluation_result, user, represented_users, view, view_general):
     for questionnaire_result in evaluation_result.questionnaire_results:
         for question_result in questionnaire_result.question_results:
             if isinstance(question_result, TextResult):
                 question_result.answers = [
                     answer
                     for answer in question_result.answers
-                    if can_textanswer_be_seen_by(user, represented_users, answer, view)
+                    #hier view_general added
+                    if can_textanswer_be_seen_by(user, represented_users, answer, view, view_general)
                 ]
             if isinstance(question_result, RatingResult) and question_result.additional_text_result:
                 question_result.additional_text_result.answers = [
                     answer
                     for answer in question_result.additional_text_result.answers
-                    if can_textanswer_be_seen_by(user, represented_users, answer, view)
+                    if can_textanswer_be_seen_by(user, represented_users, answer, view, view_general)
                 ]
         # remove empty TextResults
         cleaned_results = []
