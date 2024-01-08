@@ -460,26 +460,29 @@ def can_textanswer_be_seen_by(
     user: UserProfile,
     represented_users: list[UserProfile],
     textanswer: TextAnswer,
-    view: str,
-    view_general: str,
+    view_general_text: str,
+    view_contributor_text: str,
 ) -> bool:
     # pylint: disable=too-many-return-statements
     assert textanswer.review_decision in [TextAnswer.ReviewDecision.PRIVATE, TextAnswer.ReviewDecision.PUBLIC]
     contributor = textanswer.contribution.contributor
 
     if(textanswer.contribution.is_general == True):
-        if(view_general == "show"):
+        if(view_general_text == "show"):
+            #is das jtz so richtig hier?
             if(user.is_responsible_or_contributor_or_delegate or user.is_staff or user.is_reviewer):
                 return True
             else:
                 return False
         else:
             return False
-
-    if view == "public":
-        return False
+        
+    else:
+        if view_contributor_text == "hide":
+            return False
 
     if view == "export":
+        #was is private??
         if textanswer.is_private:
             return False
         if not textanswer.contribution.is_general and contributor != user:
@@ -487,6 +490,7 @@ def can_textanswer_be_seen_by(
     elif user.is_reviewer:
         return True
 
+    #private??
     if textanswer.is_private:
         return contributor == user
 
