@@ -167,7 +167,7 @@ def evaluation_detail(request, semester_id, evaluation_id):
     evaluation = get_object_or_404(semester.evaluations, id=evaluation_id, course__semester=semester)
 
     #hier view_general added
-    view_general, view, view_as_user, represented_users, contributor_id = evaluation_detail_parse_get_parameters(request, evaluation)
+    view_general, view_contributor, view_as_user, represented_users, contributor_id = evaluation_detail_parse_get_parameters(request, evaluation)
 
     evaluation_result = get_results(evaluation)
     #hier view_general added
@@ -213,7 +213,7 @@ def evaluation_detail(request, semester_id, evaluation_id):
         "can_export_text_answers": (
             view in ("export", "full") and (view_as_user.is_reviewer or is_responsible_or_contributor_or_delegate)
         ),
-        "view": view,
+        "view_contributor": view_contributor,
         "view_general": view_general,
         "view_as_user": view_as_user,
         "contributors_with_omitted_results": contributors_with_omitted_results,
@@ -379,11 +379,11 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
     if not evaluation.can_results_page_be_seen_by(request.user):
         raise PermissionDenied
     
-    view_general = request.GET.get("view_general", "show")
+    view_general = request.GET.get("view_general", "hide")
     if view_general not in ["show", "hide"]:
-        view = "show"
+        view = "hide"
 
-    view = request.GET.get("view", "public" if request.user.is_reviewer else "full")
+    view_general = request.GET.get("view_general", "public" if request.user.is_reviewer else "full")
     if view not in ["public", "full", "export"]:
         view = "public"
 
