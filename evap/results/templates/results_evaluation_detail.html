@@ -33,25 +33,25 @@
                 <div class="row">
                     <div class="col-auto">
                         <div class="btn-switch btn-switch-light my-auto d-print-none">
-                            <div class="btn-switch-label">{% trans 'General text answers' %}</div>
+                            <div class="btn-switch-label">{% trans 'General results' %}</div>
                             <div class="btn-switch btn-group">
-                                {% if user.is_staff and view_general == 'show' or is_contributor %}
+                                {% if user.is_staff and view_general_text == 'show' or is_contributor %}
                                     <a
-                                        href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general=show&view_contributor={{view}}"
+                                        href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text=show&view_contributor_results={{view}}"
                                         role="button"
-                                        class="btn btn-sm btn-light{% if view_general == 'show' %} active{% endif %}"
+                                        class="btn btn-sm btn-light{% if view_general_text == 'show' %} active{% endif %}"
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="bottom"
                                         title="{% blocktrans %}Tooltip shown{% endblocktrans %}"
                                     >
-                                        {% trans 'Show' context 'view mode' %}
+                                        {% trans 'Show' context 'view mode' %} <!-- baustelle -->
                                     </a>
         
                                 {% endif %}
                                 <a
-                                    href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general=hide&view_contributor={{view}}"
+                                    href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text=hide&view_contributor_results={{view}}"
                                     role="button"
-                                    class="btn btn-sm btn-light{% if view_general == 'hide' %} active{% endif %}"
+                                    class="btn btn-sm btn-light{% if view_general_text == 'hide' %} active{% endif %}"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="bottom"
                                     title="{% trans 'Tooltip hidden' %}"
@@ -65,13 +65,13 @@
                 <div class="row mt-3">
                     <div class="col-auto">
                         <div class="btn-switch btn-switch-light my-auto d-print-none">
-                            <div class="btn-switch-label">{% trans 'Contributor text answers' %}</div>
+                            <div class="btn-switch-label">{% trans 'Contributor results' %}</div>
                             <div class="btn-switch btn-group">
-                                {% if user.is_staff and view == 'export' or is_contributor %}
+                                {% if user.is_staff and view == 'export' or is_contributor %} <!-- baustelle -->
                                     <a
                                         href="{% if is_contributor %}{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view=export{% endif %}"
                                         role="button"
-                                        class="btn btn-sm btn-light{% if view_contributor == 'show' %} active{% endif %}"
+                                        class="btn btn-sm btn-light{% if view_contributor_results == 'show' %} active{% endif %}"
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="bottom"
                                         title="{% blocktrans %}Shows filtered view meant for personal export. Other contributors' results and private answers are hidden.{% endblocktrans %}"
@@ -83,7 +83,7 @@
                                 <a
                                     href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view=full"
                                     role="button"
-                                    class="btn btn-sm btn-light{% if view_contributor == 'hide' %} active{% endif %}"
+                                    class="btn btn-sm btn-light{% if view_contributor_results == 'hide' %} active{% endif %}"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="bottom"
                                     title="{% trans 'Shows all results available for you.' %}"
@@ -109,7 +109,7 @@
                                     <a
                                         href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view=public"
                                         role="button"
-                                        class="btn btn-sm btn-light{% if view_contributor == 'personal' %} active{% endif %}"
+                                        class="btn btn-sm btn-light{% if view_contributor_results == 'personal' %} active{% endif %}"
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="bottom"
                                         title="
@@ -138,7 +138,7 @@
         <div class="card-header d-flex">
             <div class="me-auto">{% trans 'Overview' %}</div>
             {% if can_export_text_answers %}
-                <a class="btn btn-sm btn-light d-print-none" href="{% url 'results:evaluation_text_answers_export' evaluation.id %}?view={{ view }}{% if contributor_id is not None %}&contributor_id={{ contributor_id }}{% endif %}" type="button">
+                <a class="btn btn-sm btn-light d-print-none" href="{% url 'results:evaluation_text_answers_export' evaluation.id %}?view={{ view }}{% if contributor_id is not None %}&contributor_id={{ contributor_id }}{% endif %}" type="button"> <!--müssen wir den link auch noch ändern? view zu view_general_text und view_contributor_results hinzufügen?-->
                     {% trans 'Export text answers' %}
                 </a>
             {% endif %}

@@ -461,14 +461,14 @@ def can_textanswer_be_seen_by(
     represented_users: list[UserProfile],
     textanswer: TextAnswer,
     view_general_text: str,
-    view_contributor_text: str,
+    view_contributor_results: str,
 ) -> bool:
     # pylint: disable=too-many-return-statements
     assert textanswer.review_decision in [TextAnswer.ReviewDecision.PRIVATE, TextAnswer.ReviewDecision.PUBLIC]
     contributor = textanswer.contribution.contributor
 
     if(textanswer.contribution.is_general == True):
-        if(view_general_text == "show"):
+        if(view_general_text == "show"): #  müsste hier nicht contributor überprüft werden?
             #is das jtz so richtig hier?
             if(user.is_responsible_or_contributor_or_delegate or user.is_staff or user.is_reviewer):
                 return True
@@ -478,14 +478,14 @@ def can_textanswer_be_seen_by(
             return False
         
     else:
-        if view_contributor_text == "hide":
+        if view_contributor_results == "hide":
             return False
 
-    if view == "export":
-        #was is private??
+    if view == "export": #baustelle
+        #was is private?? private nachrichten können nur von der person für die sie bestimmt sind lesen, also keine stellvertreter oder sonstiges (wird bei review festgelegt)
         if textanswer.is_private:
             return False
-        if not textanswer.contribution.is_general and contributor != user:
+        if not textanswer.contribution.is_general and contributor != user: # hier nochmal mit josef quatschen
             return False
     elif user.is_reviewer:
         return True

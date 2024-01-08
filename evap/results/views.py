@@ -167,24 +167,24 @@ def evaluation_detail(request, semester_id, evaluation_id):
     evaluation = get_object_or_404(semester.evaluations, id=evaluation_id, course__semester=semester)
 
     #hier view_general added
-    view_general_text, view_contributor_text, view_as_user, represented_users, contributor_id = evaluation_detail_parse_get_parameters(request, evaluation)
+    view_general_text, view_contributor_results, view_as_user, represented_users, contributor_id = evaluation_detail_parse_get_parameters(request, evaluation)
 
     evaluation_result = get_results(evaluation)
     #hier view_general added
-    remove_textanswers_that_the_user_must_not_see(evaluation_result, view_as_user, represented_users, view_general_text, view_contributor_text)
+    remove_textanswers_that_the_user_must_not_see(evaluation_result, view_as_user, represented_users, view_general_text, view_contributor_results)
     exclude_empty_headings(evaluation_result)
     remove_empty_questionnaire_and_contribution_results(evaluation_result)
     add_warnings(evaluation, evaluation_result)
 
     top_results, bottom_results, contributor_results = split_evaluation_result_into_top_bottom_and_contributor(
-        evaluation_result, view_as_user, view
+        evaluation_result, view_as_user, view_general_text # nur zum testen
     )
 
     course_evaluations = get_evaluations_of_course(evaluation.course, request)
     course_evaluations.sort(key=lambda evaluation: evaluation.name)
 
     contributors_with_omitted_results = []
-    if view == "export":
+    if view_general_text == "export": # nur zum testen
         contributors_with_omitted_results = [
             contribution_result.contributor
             for contribution_result in evaluation_result.contribution_results
@@ -211,9 +211,9 @@ def evaluation_detail(request, semester_id, evaluation_id):
         "is_responsible_or_contributor_or_delegate": is_responsible_or_contributor_or_delegate,
         "can_download_grades": view_as_user.can_download_grades,
         "can_export_text_answers": (
-            view in ("export", "full") and (view_as_user.is_reviewer or is_responsible_or_contributor_or_delegate)
+            view_contributor_results in ("export", "full") and (view_as_user.is_reviewer or is_responsible_or_contributor_or_delegate)
         ),
-        "view_contributor_text": view_contributor_text,
+        "view_contributor_results": view_contributor_results,
         "view_general_text": view_general_text,
         "view_as_user": view_as_user,
         "contributors_with_omitted_results": contributors_with_omitted_results,
@@ -222,7 +222,7 @@ def evaluation_detail(request, semester_id, evaluation_id):
     return render(request, "results_evaluation_detail.html", template_data)
 
 #hier view_general added
-def remove_textanswers_that_the_user_must_not_see(evaluation_result, user, represented_users, view_general_text, view_contributor_text):
+def remove_textanswers_that_the_user_must_not_see(evaluation_result, user, represented_users, view_general_text, view_contributor_results):
     for questionnaire_result in evaluation_result.questionnaire_results:
         for question_result in questionnaire_result.question_results:
             if isinstance(question_result, TextResult):
@@ -230,7 +230,7 @@ def remove_textanswers_that_the_user_must_not_see(evaluation_result, user, repre
                     answer
                     for answer in question_result.answers
                     #hier view_general added
-                    if can_textanswer_be_seen_by(user, represented_users, answer, view_general_text, view_contributor_text)
+                    if can_textanswer_be_seen_by(user, represented_users, answer, view_general_text, view_contributor_results)
                 ]
             if isinstance(question_result, RatingResult) and question_result.additional_text_result:
                 question_result.additional_text_result.answers = [
@@ -304,8 +304,10 @@ def split_evaluation_result_into_top_bottom_and_contributor(evaluation_result, v
                     bottom_results.append(questionnaire_result)
                 else:
                     top_results.append(questionnaire_result)
-        elif view != "export" or view_as_user.id == contribution_result.contributor.id:
-            contributor_results.append(contribution_result)
+        elif view_as_user.id == contribution_result.contributor.id: #erstmal nur damit die seite lädt (deshalb unten auch auskommentiert); keine ahnung ob das so richtig ist
+            contributor_results.append(contribution_result)         # baustelle
+        #elif view != "export" or view_as_user.id == contribution_result.contributor.id:
+         #   contributor_results.append(contribution_result)
 
     if not contributor_results:
         top_results += bottom_results
@@ -383,9 +385,9 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
     if view_general_text not in ["show", "hide"]:
         view_general_text = "hide"
 
-    view_contributor_text = request.GET.get("view_contributor_text", "show" if request.user.is_reviewer else "hide")
-    if view_contributor_text not in ["show", "hide", "personal"]:
-        view_contributor_text = "hide"
+    view_contributor_results = request.GET.get("view_contributor_results", "show" if request.user.is_reviewer else "hide")
+    if view_contributor_results not in ["show", "hide", "personal"]:
+        view_contributor_results = "hide"
 
     view_as_user = request.user
     try:
@@ -393,19 +395,19 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
     except ValueError as e:
         raise BadRequest from e
 
-    if view_contributor_text == "personal" and request.user.is_staff:
+    if view_contributor_results == "personal" and request.user.is_staff:
         view_as_user = contributor
     contributor_id = contributor.pk if contributor != request.user else None
 
     #HIER NOCH NICHT VOLLSTÄNDIG
     represented_users = [view_as_user]
-    if view != "export":
+    if view_general_text == "show" and view_contributor_results == "show":
         represented_users += list(view_as_user.represented_users.all())
     # redirect to non-public view if there is none because the results have not been published
-    if not evaluation.can_publish_rating_results and view == "public":
-        view = "full"
+    #if not evaluation.can_publish_rating_results and view == "public":
+    #    view = "full"
 
-    return view_general_text, view_contributor_text, view_as_user, represented_users, contributor_id
+    return view_general_text, view_contributor_results, view_as_user, represented_users, contributor_id
 
 
 def extract_evaluation_answer_data(request, evaluation):
