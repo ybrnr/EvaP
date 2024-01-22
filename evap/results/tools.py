@@ -480,15 +480,15 @@ def can_textanswer_be_seen_by(
     else:
         if view_contributor_results == "hide":
             return False
-
-    if view == "export": #baustelle
-        #was is private?? private nachrichten können nur von der person für die sie bestimmt sind lesen, also keine stellvertreter oder sonstiges (wird bei review festgelegt)
-        if textanswer.is_private:
-            return False
-        if not textanswer.contribution.is_general and contributor != user: # hier nochmal mit josef quatschen
-            return False
-    elif user.is_reviewer:
-        return True
+    
+    # if view == "export": #baustelle
+    #     #was is private?? private nachrichten können nur von der person für die sie bestimmt sind lesen, also keine stellvertreter oder sonstiges (wird bei review festgelegt)
+    #     if textanswer.is_private:
+    #         return False
+    #     if not textanswer.contribution.is_general and contributor != user: # hier nochmal mit josef quatschen
+    #         return False
+    # elif user.is_reviewer:
+    #     return True
 
     #private??
     if textanswer.is_private:
