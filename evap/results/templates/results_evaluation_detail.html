@@ -37,7 +37,7 @@
                             <div class="btn-switch btn-group">
                                 {% if user.is_staff and view_general_text == 'show' or is_contributor %}
                                     <a
-                                        href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text=show&view_contributor_results={{view}}"
+                                        href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text=show&view_contributor_results={{view_contributor_results}}"
                                         role="button"
                                         class="btn btn-sm btn-light{% if view_general_text == 'show' %} active{% endif %}"
                                         data-bs-toggle="tooltip"
@@ -49,7 +49,7 @@
         
                                 {% endif %}
                                 <a
-                                    href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text=hide&view_contributor_results={{view}}"
+                                    href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text=hide&view_contributor_results={{view_contributor_results}}"
                                     role="button"
                                     class="btn btn-sm btn-light{% if view_general_text == 'hide' %} active{% endif %}"
                                     data-bs-toggle="tooltip"
@@ -69,7 +69,7 @@
                             <div class="btn-switch btn-group">
                                 {% if user.is_staff and view == 'export' or is_contributor %} <!-- baustelle -->
                                     <a
-                                        href="{% if is_contributor %}{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view=export{% endif %}"
+                                        href="{% if is_contributor %}{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text={{view_general_text}}&view_contributor_results=show{% endif %}"
                                         role="button"
                                         class="btn btn-sm btn-light{% if view_contributor_results == 'show' %} active{% endif %}"
                                         data-bs-toggle="tooltip"
@@ -81,7 +81,7 @@
         
                                 {% endif %}
                                 <a
-                                    href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view=full"
+                                    href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text={{view_general_text}}&view_contributor_results=hide"
                                     role="button"
                                     class="btn btn-sm btn-light{% if view_contributor_results == 'hide' %} active{% endif %}"
                                     data-bs-toggle="tooltip"
@@ -107,7 +107,7 @@
                                     </button>
                                 {% else %}
                                     <a
-                                        href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view=public"
+                                        href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text={{view_general_text}}&view_contributor_results=personal"
                                         role="button"
                                         class="btn btn-sm btn-light{% if view_contributor_results == 'personal' %} active{% endif %}"
                                         data-bs-toggle="tooltip"
