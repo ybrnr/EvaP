@@ -177,14 +177,14 @@ def evaluation_detail(request, semester_id, evaluation_id):
     add_warnings(evaluation, evaluation_result)
 
     top_results, bottom_results, contributor_results = split_evaluation_result_into_top_bottom_and_contributor(
-        evaluation_result, view_as_user, view_general_text # nur zum testen
+        evaluation_result, view_as_user, view_contributor_results# nur zum testen
     )
 
     course_evaluations = get_evaluations_of_course(evaluation.course, request)
     course_evaluations.sort(key=lambda evaluation: evaluation.name)
 
     contributors_with_omitted_results = []
-    if view_general_text == "export": # nur zum testen
+    if view_contributor_results == "personal": #changed
         contributors_with_omitted_results = [
             contribution_result.contributor
             for contribution_result in evaluation_result.contribution_results
@@ -236,7 +236,7 @@ def remove_textanswers_that_the_user_must_not_see(evaluation_result, user, repre
                 question_result.additional_text_result.answers = [
                     answer
                     for answer in question_result.additional_text_result.answers
-                    if can_textanswer_be_seen_by(user, represented_users, answer, view, view_general_text)
+                    if can_textanswer_be_seen_by(user, represented_users, answer, view_general_text, view_contributor_results)
                 ]
         # remove empty TextResults
         cleaned_results = []
@@ -292,20 +292,37 @@ def remove_empty_questionnaire_and_contribution_results(evaluation_result):
     ]
 
 
-def split_evaluation_result_into_top_bottom_and_contributor(evaluation_result, view_as_user, view):
+def split_evaluation_result_into_top_bottom_and_contributor(evaluation_result, view_as_user, view_contributor_results):
     top_results = []
     bottom_results = []
     contributor_results = []
 
-    for contribution_result in evaluation_result.contribution_results:
+    for contribution_result in evaluation_result.contribution_results: #sort nach contributions_results, sodass jede Antwort ein Contributor hat, ist dieser None, gibts keinen
         if contribution_result.contributor is None:
             for questionnaire_result in contribution_result.questionnaire_results:
                 if questionnaire_result.questionnaire.is_below_contributors:
                     bottom_results.append(questionnaire_result)
                 else:
                     top_results.append(questionnaire_result)
-        elif view_as_user.id == contribution_result.contributor.id: #erstmal nur damit die seite lädt (deshalb unten auch auskommentiert); keine ahnung ob das so richtig ist
-            contributor_results.append(contribution_result)         # baustelle
+        
+        elif view_contributor_results != "personal" or view_as_user.id == contribution_result.contributor.id:
+            contributor_results.append(contribution_result)
+
+        # elif view_contributor_results == "show" or view_contributor_results == "hide":
+        #     contributor_results.append(contribution_result)
+        # elif view_contributor_results == "personal":
+        #     print("view con res: ", view_contributor_results)
+        #     print("view as user: ", view_as_user.id)
+        #     print("contributor id: ", contribution_result.contributor.id)
+        #     if view_as_user.id == contribution_result.contributor.id:
+        #         contributor_results.append(contribution_result)
+        # elif view_contributor_results != "personal" or view_as_user.id == contribution_result.contributor.id:
+        #     contributor_results.append(contribution_result)
+
+        # elif view_as_user.id == contribution_result.contributor.id: #erstmal nur damit die seite lädt (deshalb unten auch auskommentiert); keine ahnung ob das so richtig ist
+        #     contributor_results.append(contribution_result)         # baustelle
+        # elif view_contributor_results == "show" or view_as_user.id == contribution_result.contributor.id:
+        #     contributor_results.append(contribution_result)
         #elif view != "export" or view_as_user.id == contribution_result.contributor.id:
          #   contributor_results.append(contribution_result)
 

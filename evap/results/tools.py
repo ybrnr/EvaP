@@ -467,9 +467,48 @@ def can_textanswer_be_seen_by(
     assert textanswer.review_decision in [TextAnswer.ReviewDecision.PRIVATE, TextAnswer.ReviewDecision.PUBLIC]
     contributor = textanswer.contribution.contributor
 
+    if(textanswer.contribution.is_general):
+        if(view_general_text == "show"):
+            #filter auf alle contriubutions
+            #in Klammern mehrere Kriterien, und verknüpft
+            #contributions sind NICHT die antworten, sondern die Leute mit ihren infos
+            #1.: der aktuelle contributor aus der Liste, ist in meinen represented users
+            #2.: suchen contributions wo text vis GENERAL is, also person hat own and general rechte
+            
+            #wenn user ein reviewer is darf er so oder so alle antworten sehen
+            if(user.is_reviewer):
+                return True
+            if (textanswer.contribution.evaluation.contributions.filter(
+                    contributor__in=represented_users,
+                    textanswer_visibility=Contribution.TextAnswerVisibility.GENERAL_TEXTANSWERS,
+            ).exists()
+            ):
+                return True
+            
+            #responsible hat an sich nix mit der evaluierung zu tun
+            #ist einfach die in dessen Namen die Veranstaltung läuft --> dürfen general text answes sehen
+            if textanswer.contribution.is_general and any(
+            user in represented_users for user in textanswer.contribution.evaluation.course.responsibles.all()
+            ):
+                return True
+        else:
+            return False
+    else:
+        pass #unter cons
+    
+
     if(textanswer.contribution.is_general == True):
-        if(view_general_text == "show"): #  müsste hier nicht contributor überprüft werden?
-            #is das jtz so richtig hier?
+        if(view_general_text == "show"):
+            #is das jtz so richtig hier? nein
+            #person die sich die seite anguckt oder vertritt
+            #in represented users sind alle die man vertritt und man selbst drin
+            #wollen gucken ob einer von denen rechte hat die seite zu sehen
+            #dann einer von denen contributor und GENERAL TEXTANWSERS 
+
+            #wenn general dann contributor = None
+            #con antworten:
+            #nur dann sehen wenn reviewer (early hau raus case), oder con unter dem die antwort is oder stellvertreter(siehe represented users)
+            #
             if(user.is_responsible_or_contributor_or_delegate or user.is_staff or user.is_reviewer):
                 return True
             else:
@@ -480,6 +519,17 @@ def can_textanswer_be_seen_by(
     else:
         if view_contributor_results == "hide":
             return False
+        elif view_contributor_results == "show":
+            if(user.is_reviewer or user.is_contributor or user.is_delegate):
+                return True
+            else:
+                return False
+        elif view_contributor_results == "personal":
+            if textanswer.is_private:
+                return False
+            if not textanswer.contribution.is_general and contributor != user:
+                return False
+            return True
     
     # if view == "export": #baustelle
     #     #was is private?? private nachrichten können nur von der person für die sie bestimmt sind lesen, also keine stellvertreter oder sonstiges (wird bei review festgelegt)
@@ -491,8 +541,9 @@ def can_textanswer_be_seen_by(
     #     return True
 
     #private??
+    #personal: private text nicht!!!
     if textanswer.is_private:
-        return contributor == user
+        return contributor == user #nur wenn man selbst der con is kann man das sehen
 
     # NOTE: when changing this behavior, make sure all changes are also reflected in results.tools.textanswers_visible_to
     # and in results.tests.test_tools.TestTextAnswerVisibilityInfo
