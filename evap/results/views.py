@@ -413,11 +413,11 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
 def extract_evaluation_answer_data(request, evaluation):
     # TextAnswerExporter wants a dict from Question to tuple of contributor_name and string list (of the answers)
 
-    view, view_as_user, represented_users, contributor_id = evaluation_detail_parse_get_parameters(request, evaluation)
+    view_general_text, view_contributor_results, view_as_user, represented_users, contributor_id = evaluation_detail_parse_get_parameters(request, evaluation)
 
     evaluation_result = get_results(evaluation)
     filter_text_answers(evaluation_result)
-    remove_textanswers_that_the_user_must_not_see(evaluation_result, view_as_user, represented_users, view)
+    remove_textanswers_that_the_user_must_not_see(evaluation_result, view_as_user, represented_users, view_general_text, view_contributor_results)
 
     results = TextAnswerExporter.InputData(evaluation_result.contribution_results)
 
