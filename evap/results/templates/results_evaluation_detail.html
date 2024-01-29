@@ -44,7 +44,7 @@
                                         data-bs-placement="bottom"
                                         title="{% blocktrans %}Tooltip shown{% endblocktrans %}"
                                     >
-                                        {% trans 'Show' context 'view mode' %}  <!-- baustelle -->
+                                        {% trans 'Full'%}  <!-- baustelle -->
                                     </a>
         
                                 
@@ -56,7 +56,7 @@
                                     data-bs-placement="bottom"
                                     title="{% trans 'Tooltip hidden' %}"
                                 >
-                                    {% trans 'Hide' %}
+                                    {% trans 'Ratings' %}
                                 </a>
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                                         data-bs-placement="bottom"
                                         title="{% blocktrans %}Shows filtered view meant for personal export. Other contributors' results and private answers are hidden.{% endblocktrans %}"
                                     >
-                                        {% trans 'Show' context 'view mode' %}
+                                        {% trans 'Full'%}
                                     </a>
         
                                 
@@ -88,40 +88,18 @@
                                     data-bs-placement="bottom"
                                     title="{% trans 'Shows all results available for you.' %}"
                                 >
-                                    {% trans 'Hide' %}
+                                    {% trans 'Ratings' %}
                                 </a>
-                                {% if not evaluation.can_publish_rating_results %}
-                                    <button
-                                        type="button"
-                                        disabled
-                                        class="btn btn-sm btn-light"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-placement="bottom"
-                                        title="{% blocktrans %}The results of this evaluation have not been published because it didn't get enough votes.{% endblocktrans %}"
-                                    >
-                                        {% if evaluation.course.is_private %}
-                                            {% trans 'Participant' %}
-                                        {% else %}
-                                            {% trans 'Public' %}
-                                        {% endif %}
-                                    </button>
-                                {% else %}
+                                {% if user.is_staff and view == 'personal' or is_contributor %}
                                     <a
                                         href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text={{view_general_text}}&view_contributor_results=personal"
                                         role="button"
                                         class="btn btn-sm btn-light{% if view_contributor_results == 'personal' %} active{% endif %}"
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="bottom"
-                                        title="
-                                            {% if evaluation.course.is_private %}
-                                                {% trans 'Shows results available for the participants.' %}"
-                                                >
-                                                {% trans 'Participant' %}
-                                            {% else %}
-                                            {% blocktrans %}Shows filtered view meant for personal export. Other contributors' results and private answers are hidden.{% endblocktrans %}"
-                                                >
-                                                {% trans 'Personal' %}
-                                            {% endif %}
+                                        title="vallah nein vallah nein vallah nein"
+                                    >
+                                        {% trans 'Personal' %}
                                     </a>
                                 {% endif %}
                             </div>

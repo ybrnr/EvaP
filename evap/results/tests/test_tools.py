@@ -587,3 +587,8 @@ class TestTextAnswerVisibilityInfo(TestCase):
                 == len(users_seeing_contribution[i][1])
                 == expected_delegate_counts[i]
             )
+    def test_can_textanswer_be_seen_by(self):
+        delegate = baker.make(UserProfile)
+        responsible = baker.make(UserProfile, delegates = [delegate])
+        answer = baker.make(TextAnswer, contribution__contributor=responsible, review_decision=TextAnswer.ReviewDecision.PUBLIC)
+        self.assertTrue(can_textanswer_be_seen_by(delegate, [delegate, responsible], answer, "hide", "show"))

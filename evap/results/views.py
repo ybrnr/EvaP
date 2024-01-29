@@ -177,7 +177,7 @@ def evaluation_detail(request, semester_id, evaluation_id):
     add_warnings(evaluation, evaluation_result)
 
     top_results, bottom_results, contributor_results = split_evaluation_result_into_top_bottom_and_contributor(
-        evaluation_result, view_as_user, view_contributor_results# nur zum testen
+        evaluation_result, view_as_user, view_contributor_results
     )
 
     course_evaluations = get_evaluations_of_course(evaluation.course, request)
@@ -430,6 +430,7 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
 def extract_evaluation_answer_data(request, evaluation):
     # TextAnswerExporter wants a dict from Question to tuple of contributor_name and string list (of the answers)
 
+    #changed
     view_general_text, view_contributor_results, view_as_user, represented_users, contributor_id = evaluation_detail_parse_get_parameters(request, evaluation)
 
     evaluation_result = get_results(evaluation)
