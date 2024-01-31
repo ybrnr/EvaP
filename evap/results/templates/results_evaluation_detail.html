@@ -90,7 +90,7 @@
                                 >
                                     {% trans 'Ratings' %}
                                 </a>
-                                {% if user.is_staff and view == 'personal' or is_contributor %}
+                                {% if user.is_staff and view_contributor_results == 'personal' or is_contributor %}
                                     <a
                                         href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text={{view_general_text}}&view_contributor_results=personal"
                                         role="button"
@@ -116,7 +116,7 @@
         <div class="card-header d-flex">
             <div class="me-auto">{% trans 'Overview' %}</div>
             {% if can_export_text_answers %}
-                <a class="btn btn-sm btn-light d-print-none" href="{% url 'results:evaluation_text_answers_export' evaluation.id %}?view={{ view }}{% if contributor_id is not None %}&contributor_id={{ contributor_id }}{% endif %}" type="button"> <!--müssen wir den link auch noch ändern? view zu view_general_text und view_contributor_results hinzufügen?-->
+                <a class="btn btn-sm btn-light d-print-none" href="{% url 'results:evaluation_text_answers_export' evaluation.id %}?view_general_text={{ view_general_text }}&view_contributor_results={{ view_contributor_results }}{% if contributor_id is not None %}&contributor_id={{ contributor_id }}{% endif %}" type="button"> <!--müssen wir den link auch noch ändern? view zu view_general_text und view_contributor_results hinzufügen? hab ich jetzt ma gemacht-->
                     {% trans 'Export text answers' %}
                 </a>
             {% endif %}
