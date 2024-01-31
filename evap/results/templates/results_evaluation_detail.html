@@ -37,21 +37,21 @@
                             <div class="btn-switch btn-group">
 
                                     <a
-                                        href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text=show&view_contributor_results={{view_contributor_results}}"
+                                        href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text=full&view_contributor_results={{view_contributor_results}}"
                                         role="button"
-                                        class="btn btn-sm btn-light{% if view_general_text == 'show' %} active{% endif %}"
+                                        class="btn btn-sm btn-light{% if view_general_text == 'full' %} active{% endif %}"
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="bottom"
                                         title="{% blocktrans %}Tooltip shown{% endblocktrans %}"
                                     >
-                                        {% trans 'Full'%}  <!-- baustelle -->
+                                        {% trans 'Full'%}
                                     </a>
         
                                 
                                 <a
-                                    href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text=hide&view_contributor_results={{view_contributor_results}}"
+                                    href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text=ratings&view_contributor_results={{view_contributor_results}}"
                                     role="button"
-                                    class="btn btn-sm btn-light{% if view_general_text == 'hide' %} active{% endif %}"
+                                    class="btn btn-sm btn-light{% if view_general_text == 'ratings' %} active{% endif %}"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="bottom"
                                     title="{% trans 'Tooltip hidden' %}"
@@ -69,9 +69,9 @@
                             <div class="btn-switch btn-group">
                                 
                                     <a
-                                        href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text={{view_general_text}}&view_contributor_results=show"
+                                        href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text={{view_general_text}}&view_contributor_results=full"
                                         role="button"
-                                        class="btn btn-sm btn-light{% if view_contributor_results == 'show' %} active{% endif %}"
+                                        class="btn btn-sm btn-light{% if view_contributor_results == 'full' %} active{% endif %}"
                                         data-bs-toggle="tooltip"
                                         data-bs-placement="bottom"
                                         title="{% blocktrans %}Shows filtered view meant for personal export. Other contributors' results and private answers are hidden.{% endblocktrans %}"
@@ -81,9 +81,9 @@
         
                                 
                                 <a
-                                    href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text={{view_general_text}}&view_contributor_results=hide"
+                                    href="{% url 'results:evaluation_detail' evaluation.course.semester.id evaluation.id %}?view_general_text={{view_general_text}}&view_contributor_results=ratings"
                                     role="button"
-                                    class="btn btn-sm btn-light{% if view_contributor_results == 'hide' %} active{% endif %}"
+                                    class="btn btn-sm btn-light{% if view_contributor_results == 'ratings' %} active{% endif %}"
                                     data-bs-toggle="tooltip"
                                     data-bs-placement="bottom"
                                     title="{% trans 'Shows all results available for you.' %}"

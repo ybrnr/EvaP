@@ -308,23 +308,7 @@ def split_evaluation_result_into_top_bottom_and_contributor(evaluation_result, v
         elif view_contributor_results != "personal" or view_as_user.id == contribution_result.contributor.id:
             contributor_results.append(contribution_result)
 
-        # elif view_contributor_results == "show" or view_contributor_results == "hide":
-        #     contributor_results.append(contribution_result)
-        # elif view_contributor_results == "personal":
-        #     print("view con res: ", view_contributor_results)
-        #     print("view as user: ", view_as_user.id)
-        #     print("contributor id: ", contribution_result.contributor.id)
-        #     if view_as_user.id == contribution_result.contributor.id:
-        #         contributor_results.append(contribution_result)
-        # elif view_contributor_results != "personal" or view_as_user.id == contribution_result.contributor.id:
-        #     contributor_results.append(contribution_result)
-
-        # elif view_as_user.id == contribution_result.contributor.id: #erstmal nur damit die seite lädt (deshalb unten auch auskommentiert); keine ahnung ob das so richtig ist
-        #     contributor_results.append(contribution_result)         # baustelle
-        # elif view_contributor_results == "show" or view_as_user.id == contribution_result.contributor.id:
-        #     contributor_results.append(contribution_result)
-        #elif view != "export" or view_as_user.id == contribution_result.contributor.id:
-         #   contributor_results.append(contribution_result)
+        
 
     if not contributor_results:
         top_results += bottom_results
@@ -398,13 +382,13 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
     if not evaluation.can_results_page_be_seen_by(request.user):
         raise PermissionDenied
     
-    view_general_text = request.GET.get("view_general_text", "show" if request.user.is_reviewer else "hide")
-    if view_general_text not in ["show", "hide"]:
-        view_general_text = "hide"
+    view_general_text = request.GET.get("view_general_text", "full" if request.user.is_reviewer else "ratings")
+    if view_general_text not in ["full", "ratings"]:
+        view_general_text = "ratings"
 
-    view_contributor_results = request.GET.get("view_contributor_results", "show" if request.user.is_reviewer else "hide")
-    if view_contributor_results not in ["show", "hide", "personal"]:
-        view_contributor_results = "hide"
+    view_contributor_results = request.GET.get("view_contributor_results", "full" if request.user.is_reviewer else "ratings")
+    if view_contributor_results not in ["full", "ratings", "personal"]:
+        view_contributor_results = "ratings"
 
     view_as_user = request.user
     try:
@@ -418,8 +402,10 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
 
     #HIER NOCH NICHT VOLLSTÄNDIG
     represented_users = [view_as_user]
-    if view_general_text == "show" and view_contributor_results == "show":
-        represented_users += list(view_as_user.represented_users.all())
+    #if view_contributor_results != "personal":
+        #niklas hat gesagt is sehr wack das hier zu machen
+        #is das nicht Qutasch????
+    represented_users += list(view_as_user.represented_users.all()) # das war einmal eingerückt unter dem auskommentierten if statement - joa nh?
     # redirect to non-public view if there is none because the results have not been published
     #if not evaluation.can_publish_rating_results and view == "public":
     #    view = "full"
