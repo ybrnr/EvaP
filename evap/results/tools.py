@@ -473,7 +473,7 @@ def can_textanswer_be_seen_by(
 
     #maybe aus dem string ding nen enum machen mit full, ratings und so
     #PRIVATE ANSWER HANDLING NOCH NICHT GEMACHT - prob gehandelt
-    #Rechteabfragen noch anpassen auch in HTML
+    #Rechteabfragen noch anpassen auch in HTML - yannik sagt is done ig
     #in HTML die Beschreibung ändern
     #überall wo das alte benutzt wurde anpassen
     if textanswer.is_public:
