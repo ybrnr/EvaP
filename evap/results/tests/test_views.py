@@ -468,23 +468,23 @@ class TestResultsSemesterEvaluationDetailView(WebTestStaffMode):
         self.assertNotIn(heading_question_2.text, page)
 
     @override_settings(VOTER_COUNT_NEEDED_FOR_PUBLISHING_RATING_RESULTS=0)
-    def test_default_view_is_public(self):
+    def test_default_view_is_public(self): #change name to ratings?
         cache_results(self.evaluation)
 
         page_without_get_parameter = self.app.get(self.url, user=self.manager)
-        self.assertEqual(page_without_get_parameter.context["view"], "public")
+        self.assertEqual(page_without_get_parameter.context["view_general_text"], "ratings")
+        self.assertEqual(page_without_get_parameter.context["view_contributor_results"], "ratings")
 
-        page_with_get_parameter = self.app.get(self.url + "?view=public", user=self.manager)
-        self.assertEqual(page_with_get_parameter.context["view"], "public")
+        page_with_ratings_general_get_parameter = self.app.get(self.url + "?view_general_text=ratings", user=self.manager)
+        self.assertEqual(page_with_ratings_general_get_parameter.context["view_general_text"], "ratings")
 
-        page_with_random_get_parameter = self.app.get(self.url + "?view=asdf", user=self.manager)
-        self.assertEqual(page_with_random_get_parameter.context["view"], "public")
+        page_with_full_general_get_parameter = self.app.get(self.url + "?view_general_text=full", user=self.manager)
+        self.assertEqual(page_with_full_general_get_parameter.context["view_general_text"], "full")
 
-        page_with_full_get_parameter = self.app.get(f"{self.url}?view=full", user=self.manager)
-        self.assertEqual(page_with_full_get_parameter.context["view"], "full")
+        page_with_random_get_parameter = self.app.get(self.url + "?view_general_text=asdf", user=self.manager)
+        self.assertEqual(page_with_random_get_parameter.context["view_general_text"], "ratings")
 
-        page_with_export_get_parameter = self.app.get(f"{self.url}?view=export", user=self.manager)
-        self.assertEqual(page_with_export_get_parameter.context["view"], "export")
+        #noch für den anderen param? auch von view_contributor_results
 
     def test_wrong_state(self):
         helper_exit_staff_mode(self)
