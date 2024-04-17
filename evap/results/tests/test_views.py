@@ -468,7 +468,7 @@ class TestResultsSemesterEvaluationDetailView(WebTestStaffMode):
         self.assertNotIn(heading_question_2.text, page)
 
     @override_settings(VOTER_COUNT_NEEDED_FOR_PUBLISHING_RATING_RESULTS=0)
-    def test_default_view_is_public(self): #change name to ratings?
+    def test_default_view(self): #change name to ratings? oder for manager weil ja und man müsste dann ja noch student checekn
         cache_results(self.evaluation)
 
         page_without_get_parameter = self.app.get(self.url, user=self.manager)
@@ -477,9 +477,15 @@ class TestResultsSemesterEvaluationDetailView(WebTestStaffMode):
 
         page_with_ratings_general_get_parameter = self.app.get(self.url + "?view_general_text=ratings", user=self.manager)
         self.assertEqual(page_with_ratings_general_get_parameter.context["view_general_text"], "ratings")
+        self.assertEqual(page_with_ratings_general_get_parameter.context["view_contributor_results"], "ratings")
 
-        page_with_full_general_get_parameter = self.app.get(self.url + "?view_general_text=full", user=self.manager)
-        self.assertEqual(page_with_full_general_get_parameter.context["view_general_text"], "full")
+        page_with_ratings_general_get_parameter = self.app.get(self.url + "?view_contributor_results=ratings", user=self.manager)
+        self.assertEqual(page_with_ratings_general_get_parameter.context["view_general_text"], "ratings")
+        self.assertEqual(page_with_ratings_general_get_parameter.context["view_contributor_results"], "ratings")
+
+        #digga das doch qustsch unter default view test ihr atzen
+        #page_with_full_general_get_parameter = self.app.get(self.url + "?view_general_text=full", user=self.manager)
+        #self.assertEqual(page_with_full_general_get_parameter.context["view_general_text"], "full")
 
         page_with_random_get_parameter = self.app.get(self.url + "?view_general_text=asdf", user=self.manager)
         self.assertEqual(page_with_random_get_parameter.context["view_general_text"], "ratings")
@@ -716,7 +722,7 @@ class TestResultsTextanswerVisibilityForManager(WebTestStaffMode):
         evaluation._participant_count = participant_count
         evaluation.save()
 
-        page = self.app.get("/results/semester/1/evaluation/1?view=full", user=self.manager)
+        page = self.app.get("/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=full", user=self.manager)
         self.assertIn(".general_orig_published.", page)
         self.assertNotIn(".general_orig_hidden.", page)
         self.assertNotIn(".general_orig_published_changed.", page)
@@ -735,7 +741,7 @@ class TestResultsTextanswerVisibilityForManager(WebTestStaffMode):
         self.assertNotIn(".responsible_contributor_additional_orig_hidden.", page)
 
     def test_textanswer_visibility_for_manager(self):
-        page = self.app.get("/results/semester/1/evaluation/1?view=full", user=self.manager)
+        page = self.app.get("/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=full", user=self.manager)
         self.assertIn(".general_orig_published.", page)
         self.assertNotIn(".general_orig_hidden.", page)
         self.assertNotIn(".general_orig_published_changed.", page)
@@ -915,7 +921,7 @@ class TestResultsOtherContributorsListOnExportView(WebTest):
         cls.responsible = baker.make(UserProfile, email="responsible@institution.example.com")
 
         evaluation = baker.make(Evaluation, state=Evaluation.State.PUBLISHED)
-        cls.url = f"/results/semester/{evaluation.course.semester.id}/evaluation/{evaluation.id}?view=export"
+        cls.url = f"/results/semester/{evaluation.course.semester.id}/evaluation/{evaluation.id}?view_contributor_results=personal"
 
         questionnaire = baker.make(Questionnaire)
         baker.make(Question, questionnaire=questionnaire, type=QuestionType.POSITIVE_LIKERT)
@@ -979,7 +985,7 @@ class TestResultsTextanswerVisibilityForExportView(WebTest):
 
     def test_textanswer_visibility_for_responsible_contributor(self):
         page = self.app.get(
-            "/results/semester/1/evaluation/1?view=export", user="responsible_contributor@institution.example.com"
+            "/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=personal", user="responsible_contributor@institution.example.com"
         )
 
         self.assertIn(".general_orig_published.", page)
@@ -1050,7 +1056,7 @@ class TestResultsTextanswerVisibilityForExportView(WebTest):
         with run_in_staff_mode(self):
             contributor_id = UserProfile.objects.get(email="responsible@institution.example.com").id
             page = self.app.get(
-                f"/results/semester/1/evaluation/1?view=export&contributor_id={contributor_id}",
+                f"/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=personal&contributor_id={contributor_id}",
                 user="manager@institution.example.com",
             )
 
@@ -1072,7 +1078,7 @@ class TestResultsTextanswerVisibilityForExportView(WebTest):
         contributor = UserProfile.objects.get(email="contributor@institution.example.com")
         contributor.groups.add(manager_group)
         page = self.app.get(
-            f"/results/semester/1/evaluation/1?view=export&contributor_id={contributor.id}",
+            f"/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=personal&contributor_id={contributor.id}",
             user="contributor@institution.example.com",
         )
 

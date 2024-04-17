@@ -382,11 +382,13 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
     if not evaluation.can_results_page_be_seen_by(request.user):
         raise PermissionDenied
     
-    view_general_text = request.GET.get("view_general_text", "full" if request.user.is_reviewer else "ratings")
+    #is das nicht mega dumm muss nicht ratings und full andersrum, wenn hier changed dann auch ganz viele Tests
+    #u.a.: test_default_view
+    view_general_text = request.GET.get("view_general_text", "ratings" if request.user.is_reviewer else "full")
     if view_general_text not in ["full", "ratings"]:
         view_general_text = "ratings"
 
-    view_contributor_results = request.GET.get("view_contributor_results", "full" if request.user.is_reviewer else "ratings")
+    view_contributor_results = request.GET.get("view_contributor_results", "ratings" if request.user.is_reviewer else "full")
     if view_contributor_results not in ["full", "ratings", "personal"]:
         view_contributor_results = "ratings"
 
