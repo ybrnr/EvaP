@@ -472,23 +472,23 @@ class TestResultsSemesterEvaluationDetailView(WebTestStaffMode):
         cache_results(self.evaluation)
 
         page_without_get_parameter = self.app.get(self.url, user=self.manager)
-        self.assertEqual(page_without_get_parameter.context["view_general_text"], "ratings")
-        self.assertEqual(page_without_get_parameter.context["view_contributor_results"], "ratings")
+        self.assertEqual(page_without_get_parameter.context["view_general_text"], "full")
+        self.assertEqual(page_without_get_parameter.context["view_contributor_results"], "full")
 
         page_with_ratings_general_get_parameter = self.app.get(self.url + "?view_general_text=ratings", user=self.manager)
         self.assertEqual(page_with_ratings_general_get_parameter.context["view_general_text"], "ratings")
-        self.assertEqual(page_with_ratings_general_get_parameter.context["view_contributor_results"], "ratings")
+        self.assertEqual(page_with_ratings_general_get_parameter.context["view_contributor_results"], "full")
 
         page_with_ratings_general_get_parameter = self.app.get(self.url + "?view_contributor_results=ratings", user=self.manager)
-        self.assertEqual(page_with_ratings_general_get_parameter.context["view_general_text"], "ratings")
+        self.assertEqual(page_with_ratings_general_get_parameter.context["view_general_text"], "full")
         self.assertEqual(page_with_ratings_general_get_parameter.context["view_contributor_results"], "ratings")
 
         #digga das doch qustsch unter default view test ihr atzen
         #page_with_full_general_get_parameter = self.app.get(self.url + "?view_general_text=full", user=self.manager)
         #self.assertEqual(page_with_full_general_get_parameter.context["view_general_text"], "full")
 
-        page_with_random_get_parameter = self.app.get(self.url + "?view_general_text=asdf", user=self.manager)
-        self.assertEqual(page_with_random_get_parameter.context["view_general_text"], "ratings")
+        page_with_random_get_parameter = self.app.get(self.url + "?view_general_text=josefwarhier", user=self.manager)
+        self.assertEqual(page_with_random_get_parameter.context["view_general_text"], "full")
 
         #noch für den anderen param? auch von view_contributor_results
 
@@ -907,7 +907,7 @@ class TestResultsTextanswerVisibility(WebTest):
         self.app.get("/results/semester/1/evaluation/1", user="student_external@example.com", status=403)
 
     def test_textanswer_visibility_info_is_shown(self):
-        page = self.app.get("/results/semester/1/evaluation/1", user="contributor@institution.example.com")
+        page = self.app.get("/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=full", user="contributor@institution.example.com")
         self.assertRegex(page.body.decode(), r"can be seen by:<br />\s*contributor user")
 
     def test_textanswer_visibility_info_for_proxy_user(self):

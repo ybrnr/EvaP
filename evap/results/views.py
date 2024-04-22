@@ -384,13 +384,19 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
     
     #is das nicht mega dumm muss nicht ratings und full andersrum, wenn hier changed dann auch ganz viele Tests
     #u.a.: test_default_view
-    view_general_text = request.GET.get("view_general_text", "ratings" if request.user.is_reviewer else "full")
+    view_general_text = request.GET.get("view_general_text", "full" if request.user.is_reviewer or request.user.is_responsible_or_contributor_or_delegate else "ratings")
     if view_general_text not in ["full", "ratings"]:
-        view_general_text = "ratings"
+        if request.user.is_reviewer or request.user.is_responsible_or_contributor_or_delegate:
+            view_general_text = "full"
+        else: 
+            view_general_text = "ratings"
 
-    view_contributor_results = request.GET.get("view_contributor_results", "ratings" if request.user.is_reviewer else "full")
+    view_contributor_results = request.GET.get("view_contributor_results", "full" if request.user.is_reviewer or request.user.is_responsible_or_contributor_or_delegate else "ratings")
     if view_contributor_results not in ["full", "ratings", "personal"]:
-        view_contributor_results = "ratings"
+        if request.user.is_reviewer or request.user.is_responsible_or_contributor_or_delegate:
+            view_contributor_results = "full"
+        else: 
+            view_contributor_results = "ratings"
 
     view_as_user = request.user
     try:
