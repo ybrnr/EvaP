@@ -384,6 +384,7 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
     
     #is das nicht mega dumm muss nicht ratings und full andersrum, wenn hier changed dann auch ganz viele Tests
     #u.a.: test_default_view
+    # ham wa jz gemacht
     view_general_text = request.GET.get("view_general_text", "full" if request.user.is_reviewer or request.user.is_responsible_or_contributor_or_delegate else "ratings")
     if view_general_text not in ["full", "ratings"]:
         if request.user.is_reviewer or request.user.is_responsible_or_contributor_or_delegate:
