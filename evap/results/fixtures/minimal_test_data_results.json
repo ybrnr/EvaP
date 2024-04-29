@@ -110,17 +110,6 @@
   }
 },
 {
-  "pk": 6,
-  "model": "evaluation.question",
-  "fields": {
-    "questionnaire": 2,
-    "text_en": "can you see me?",
-    "text_de": "can you see me?",
-    "allows_additional_textanswers": false,
-    "type": 0
-  }
-},
-{
   "pk": "00000000-0000-0000-0000-000000000001",
   "model": "evaluation.textanswer",
   "fields": {
@@ -228,17 +217,6 @@
     "original_answer": null,
     "contribution": 6,
     "review_decision": "NR"
-  }
-},
-{
-  "pk": "00000000-0000-0000-0000-000000000016",
-  "model": "evaluation.textanswer",
-  "fields": {
-    "answer": ".proxy_user_visibility_info.",
-    "question": 6,
-    "original_answer": null,
-    "contribution": 1,
-    "review_decision": "PU"
   }
 },
 {
