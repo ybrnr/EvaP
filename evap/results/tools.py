@@ -1,7 +1,6 @@
 from collections import OrderedDict, defaultdict
 from collections.abc import Iterable
 from copy import copy
-from enum import Enum
 from math import ceil, modf
 from typing import cast
 
