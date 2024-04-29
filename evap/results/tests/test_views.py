@@ -779,17 +779,17 @@ class TestResultsTextanswerVisibility(WebTest):
 
     def test_textanswer_visibility_for_responsible(self):
         page = self.app.get("/results/semester/1/evaluation/1", user="responsible@institution.example.com")
-        self.assertIn(".general_orig_published.", page)
+        self.assertIn(".general_orig_published.", page) #normale text answer
         self.assertNotIn(".general_orig_hidden.", page)
         self.assertNotIn(".general_orig_published_changed.", page)
         self.assertIn(".general_additional_orig_published.", page)
-        self.assertNotIn(".general_additional_orig_hidden.", page)
+        self.assertNotIn(".general_additional_orig_hidden.", page) #extra
         self.assertIn(".general_changed_published.", page)
         self.assertNotIn(".contributor_orig_published.", page)
         self.assertNotIn(".contributor_orig_private.", page)
-        self.assertNotIn(".responsible_contributor_orig_published.", page)
+        self.assertNotIn(".responsible_contributor_orig_published.", page) #neue antwort
         self.assertNotIn(".responsible_contributor_orig_hidden.", page)
-        self.assertNotIn(".responsible_contributor_orig_published_changed.", page)
+        self.assertNotIn(".responsible_contributor_orig_published_changed.", page) #ursprüngliche antwort
         self.assertNotIn(".responsible_contributor_changed_published.", page)
         self.assertNotIn(".responsible_contributor_orig_private.", page)
         self.assertNotIn(".responsible_contributor_orig_notreviewed.", page)
@@ -971,6 +971,84 @@ class TestResultsOtherContributorsListOnExportView(WebTest):
         self.assertIn(f"<li>{self.other_contributor_1.full_name}</li>", page)
         self.assertIn(f"<li>{self.other_contributor_2.full_name}</li>", page)
 
+class TestResultsTextanswerVisibilityForContributorPersonalView(WebTest):
+    fixtures = ["minimal_test_data_results"]
+
+    # NOTE: WIR MÜSSEN NOCH DIE ANDEREN ANSWERS ADDEN BEI JEDEM TEST AUS DER JSON DATEI
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.manager = make_manager()
+        cache_results(Evaluation.objects.get(id=1))
+
+    def test_textanswer_visibility_for_responsible(self):
+        ##NOTE: der atze hat nix in der eval
+        page = self.app.get("/results/semester/1/evaluation/1?view_contributor_results=personal", user="responsible@institution.example.com")
+        self.assertNotIn(".contributor_orig_published.", page)
+        self.assertNotIn(".contributor_orig_private.", page)
+        self.assertNotIn(".responsible_contributor_orig_published.", page)
+        self.assertNotIn(".responsible_contributor_orig_hidden.", page)
+        self.assertNotIn(".responsible_contributor_orig_published_changed.", page)
+        self.assertNotIn(".responsible_contributor_changed_published.", page)
+        self.assertNotIn(".responsible_contributor_orig_private.", page)
+        self.assertNotIn(".responsible_contributor_orig_notreviewed.", page)
+
+    def test_textanswer_visibility_for_responsible_contributor(self):
+        page = self.app.get(
+            "/results/semester/1/evaluation/1?view_contributor_results=personal",
+            user="responsible_contributor@institution.example.com",
+        )
+        #Review decision: PR = private, PU = published, DE = deleted, HI = hidden
+        self.assertIn(".general_orig_published.", page)
+        self.assertNotIn(".general_orig_hidden.", page)
+        self.assertNotIn(".general_orig_published_changed.", page)
+        self.assertIn(".general_changed_published.", page)
+        self.assertNotIn(".contributor_orig_published.", page)
+        self.assertNotIn(".contributor_orig_private.", page)
+        self.assertIn(".responsible_contributor_orig_published.", page)
+        self.assertNotIn(".responsible_contributor_orig_hidden.", page)
+        self.assertNotIn(".responsible_contributor_orig_published_changed.", page)
+        self.assertIn(".responsible_contributor_changed_published.", page)
+        self.assertIn(".responsible_contributor_orig_private.", page)
+        self.assertNotIn(".responsible_contributor_orig_notreviewed.", page)
+
+    def test_textanswer_visibility_for_contributor(self):
+        page = self.app.get(
+            "/results/semester/1/evaluation/1?view_contributor_results=personal",
+            user="contributor@institution.example.com",
+        )
+        # NOTE: textanswervisibility bei dem auf OWN
+        self.assertNotIn(".general_orig_published.", page)
+        self.assertNotIn(".general_orig_hidden.", page)
+        self.assertNotIn(".general_orig_published_changed.", page)
+        self.assertNotIn(".general_changed_published.", page)
+        self.assertIn(".contributor_orig_published.", page)
+        self.assertIn(".contributor_orig_private.", page)
+        self.assertNotIn(".responsible_contributor_orig_published.", page)
+        self.assertNotIn(".responsible_contributor_orig_hidden.", page)
+        self.assertNotIn(".responsible_contributor_orig_published_changed.", page)
+        self.assertNotIn(".responsible_contributor_changed_published.", page)
+        self.assertNotIn(".responsible_contributor_orig_private.", page)
+        self.assertNotIn(".responsible_contributor_orig_notreviewed.", page)
+    
+    def test_textanswer_visibility_for_contributor_general_textanswers(self):
+        page = self.app.get(
+            "/results/semester/1/evaluation/1?view_contributor_results=personal",
+            user="contributor_general_textanswers@institution.example.com",
+        )
+
+        self.assertIn(".general_orig_published.", page)
+        self.assertNotIn(".general_orig_hidden.", page)
+        self.assertNotIn(".general_orig_published_changed.", page)
+        self.assertIn(".general_changed_published.", page)
+        self.assertNotIn(".contributor_orig_published.", page)
+        self.assertNotIn(".contributor_orig_private.", page)
+        self.assertNotIn(".responsible_contributor_orig_published.", page)
+        self.assertNotIn(".responsible_contributor_orig_hidden.", page)
+        self.assertNotIn(".responsible_contributor_orig_published_changed.", page)
+        self.assertNotIn(".responsible_contributor_changed_published.", page)
+        self.assertNotIn(".responsible_contributor_orig_private.", page)
+        self.assertNotIn(".responsible_contributor_orig_notreviewed.", page)
 
 class TestResultsTextanswerVisibilityForExportView(WebTest):
     fixtures = ["minimal_test_data_results"]
@@ -981,6 +1059,7 @@ class TestResultsTextanswerVisibilityForExportView(WebTest):
         cache_results(Evaluation.objects.get(id=1))
 
     def test_textanswer_visibility_for_responsible(self):
+        ##NOTE: der atze hat nix
         page = self.app.get("/results/semester/1/evaluation/1?view=export", user="responsible@institution.example.com")
 
         self.assertIn(".general_orig_published.", page)
