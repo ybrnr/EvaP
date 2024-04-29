@@ -468,29 +468,35 @@ class TestResultsSemesterEvaluationDetailView(WebTestStaffMode):
         self.assertNotIn(heading_question_2.text, page)
 
     @override_settings(VOTER_COUNT_NEEDED_FOR_PUBLISHING_RATING_RESULTS=0)
-    def test_default_view(self): #change name to ratings? oder for manager weil ja und man müsste dann ja noch student checekn
+    def test_default_view(
+        self,
+    ):  # change name to ratings? oder for manager weil ja und man müsste dann ja noch student checekn
         cache_results(self.evaluation)
 
         page_without_get_parameter = self.app.get(self.url, user=self.manager)
         self.assertEqual(page_without_get_parameter.context["view_general_text"], "full")
         self.assertEqual(page_without_get_parameter.context["view_contributor_results"], "full")
 
-        page_with_ratings_general_get_parameter = self.app.get(self.url + "?view_general_text=ratings", user=self.manager)
+        page_with_ratings_general_get_parameter = self.app.get(
+            self.url + "?view_general_text=ratings", user=self.manager
+        )
         self.assertEqual(page_with_ratings_general_get_parameter.context["view_general_text"], "ratings")
         self.assertEqual(page_with_ratings_general_get_parameter.context["view_contributor_results"], "full")
 
-        page_with_ratings_general_get_parameter = self.app.get(self.url + "?view_contributor_results=ratings", user=self.manager)
+        page_with_ratings_general_get_parameter = self.app.get(
+            self.url + "?view_contributor_results=ratings", user=self.manager
+        )
         self.assertEqual(page_with_ratings_general_get_parameter.context["view_general_text"], "full")
         self.assertEqual(page_with_ratings_general_get_parameter.context["view_contributor_results"], "ratings")
 
-        #digga das doch qustsch unter default view test ihr atzen
-        #page_with_full_general_get_parameter = self.app.get(self.url + "?view_general_text=full", user=self.manager)
-        #self.assertEqual(page_with_full_general_get_parameter.context["view_general_text"], "full")
+        # digga das doch qustsch unter default view test ihr atzen
+        # page_with_full_general_get_parameter = self.app.get(self.url + "?view_general_text=full", user=self.manager)
+        # self.assertEqual(page_with_full_general_get_parameter.context["view_general_text"], "full")
 
         page_with_random_get_parameter = self.app.get(self.url + "?view_general_text=josefwarhier", user=self.manager)
         self.assertEqual(page_with_random_get_parameter.context["view_general_text"], "full")
 
-        #noch für den anderen param? auch von view_contributor_results
+        # noch für den anderen param? auch von view_contributor_results
 
     def test_wrong_state(self):
         helper_exit_staff_mode(self)
@@ -722,7 +728,9 @@ class TestResultsTextanswerVisibilityForManager(WebTestStaffMode):
         evaluation._participant_count = participant_count
         evaluation.save()
 
-        page = self.app.get("/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=full", user=self.manager)
+        page = self.app.get(
+            "/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=full", user=self.manager
+        )
         self.assertIn(".general_orig_published.", page)
         self.assertNotIn(".general_orig_hidden.", page)
         self.assertNotIn(".general_orig_published_changed.", page)
@@ -741,7 +749,9 @@ class TestResultsTextanswerVisibilityForManager(WebTestStaffMode):
         self.assertNotIn(".responsible_contributor_additional_orig_hidden.", page)
 
     def test_textanswer_visibility_for_manager(self):
-        page = self.app.get("/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=full", user=self.manager)
+        page = self.app.get(
+            "/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=full", user=self.manager
+        )
         self.assertIn(".general_orig_published.", page)
         self.assertNotIn(".general_orig_hidden.", page)
         self.assertNotIn(".general_orig_published_changed.", page)
@@ -907,7 +917,10 @@ class TestResultsTextanswerVisibility(WebTest):
         self.app.get("/results/semester/1/evaluation/1", user="student_external@example.com", status=403)
 
     def test_textanswer_visibility_info_is_shown(self):
-        page = self.app.get("/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=full", user="contributor@institution.example.com")
+        page = self.app.get(
+            "/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=full",
+            user="contributor@institution.example.com",
+        )
         self.assertRegex(page.body.decode(), r"can be seen by:<br />\s*contributor user")
 
     def test_textanswer_visibility_info_for_proxy_user(self):
@@ -985,7 +998,8 @@ class TestResultsTextanswerVisibilityForExportView(WebTest):
 
     def test_textanswer_visibility_for_responsible_contributor(self):
         page = self.app.get(
-            "/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=personal", user="responsible_contributor@institution.example.com"
+            "/results/semester/1/evaluation/1?view_general_text=full&view_contributor_results=personal",
+            user="responsible_contributor@institution.example.com",
         )
 
         self.assertIn(".general_orig_published.", page)
@@ -1002,7 +1016,10 @@ class TestResultsTextanswerVisibilityForExportView(WebTest):
         self.assertNotIn(".responsible_contributor_orig_notreviewed.", page)
 
     def test_textanswer_visibility_for_contributor(self):
-        page = self.app.get("/results/semester/1/evaluation/1?view_general_text=ratings&view_contributor_results=personal", user="contributor@institution.example.com")
+        page = self.app.get(
+            "/results/semester/1/evaluation/1?view_general_text=ratings&view_contributor_results=personal",
+            user="contributor@institution.example.com",
+        )
 
         self.assertNotIn(".general_orig_published.", page)
         self.assertNotIn(".general_orig_hidden.", page)

@@ -563,7 +563,9 @@ class TestTextAnswerVisibilityInfo(TestCase):
         for user in UserProfile.objects.all():
             represented_users = [user] + list(user.represented_users.all())
             for i, textanswer in enumerate(textanswers):
-                if can_textanswer_be_seen_by(user, represented_users, textanswer, "full", "full"): #beides auf full dann müsste passen - fixed
+                if can_textanswer_be_seen_by(
+                    user, represented_users, textanswer, "full", "full"
+                ):  # beides auf full dann müsste passen - fixed
                     if can_textanswer_be_seen_by(user, [user], textanswer, "full", "full"):
                         users_seeing_contribution[i][0].add(user)
                     else:
@@ -587,8 +589,11 @@ class TestTextAnswerVisibilityInfo(TestCase):
                 == len(users_seeing_contribution[i][1])
                 == expected_delegate_counts[i]
             )
+
     def test_can_textanswer_be_seen_by(self):
         delegate = baker.make(UserProfile)
-        responsible = baker.make(UserProfile, delegates = [delegate])
-        answer = baker.make(TextAnswer, contribution__contributor=responsible, review_decision=TextAnswer.ReviewDecision.PUBLIC)
+        responsible = baker.make(UserProfile, delegates=[delegate])
+        answer = baker.make(
+            TextAnswer, contribution__contributor=responsible, review_decision=TextAnswer.ReviewDecision.PUBLIC
+        )
         self.assertFalse(can_textanswer_be_seen_by(delegate, [delegate, responsible], answer, "hide", "show"))
