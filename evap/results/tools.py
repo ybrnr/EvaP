@@ -463,7 +463,7 @@ def can_textanswer_be_seen_by(
     view_general_text: str,
     view_contributor_results: str,
 ) -> bool:
-    # pylint: disable=too-many-return-statements
+    # pylint: disable=too-many-return-statements,too-many-branches
     assert textanswer.review_decision in [TextAnswer.ReviewDecision.PRIVATE, TextAnswer.ReviewDecision.PUBLIC]
     contributor = textanswer.contribution.contributor
 
@@ -513,7 +513,7 @@ def can_textanswer_be_seen_by(
     elif textanswer.is_private:
         # private textanswers should only be seen by the contributor
         # aber wirklich was is mit reviewer z.B.?? darf er so? ja darf er
-        if view_contributor_results in ("personal", "full"): 
+        if view_contributor_results in ("personal", "full"):
             if user.is_reviewer:
                 return True
             return contributor == user
