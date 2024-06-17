@@ -972,6 +972,9 @@ class TestResultsOtherContributorsListOnExportView(WebTest):
         self.assertIn(f"<li>{self.other_contributor_2.full_name}</li>", page)
 
 
+# ab hier unsere Tests
+
+
 class TestResultsTextanswerVisibilityPersonalView(WebTest):
     fixtures = ["minimal_test_data_results"]
 
@@ -1147,10 +1150,9 @@ class TestResultsTextanswerVisibilityPersonalView(WebTest):
 
     def test_textanswer_visibility_for_student(self):
         page = self.app.get(
-            "/results/semester/1/evaluation/1??view_contributor_results=personal",
-            user="student@institution.example.com",
-        )
-
+            "/results/semester/1/evaluation/1?view_contributor_results=personal", 
+            user="student@institution.example.com")
+        
         self.assertNotIn(".general_orig_published.", page)
         self.assertNotIn(".general_orig_deleted.", page)
         self.assertNotIn(".general_changed_published.", page)
@@ -1167,6 +1169,54 @@ class TestResultsTextanswerVisibilityPersonalView(WebTest):
         self.assertNotIn(".responsible_contributor_additional_orig_deleted.", page)
         self.assertNotIn(".general_additional_orig_published.", page)
         self.assertNotIn(".general_additional_orig_deleted.", page)
+
+    def test_textanswer_visibility_for_manager(self):
+        #manager ohne contributions
+        page = self.app.get(
+            "/results/semester/1/evaluation/1?view_contributor_results=personal", 
+            user="manager@institution.example.com")
+        
+        self.assertNotIn(".general_orig_published.", page)
+        self.assertNotIn(".general_orig_deleted.", page)
+        self.assertNotIn(".general_changed_published.", page)        
+        self.assertNotIn(".general_orig_published_changed.", page)
+        self.assertNotIn(".contributor_orig_published.", page)
+        self.assertNotIn(".contributor_orig_private.", page)
+        self.assertNotIn(".responsible_contributor_orig_published.", page)
+        self.assertNotIn(".responsible_contributor_orig_deleted.", page)
+        self.assertNotIn(".responsible_contributor_changed_published.", page)
+        self.assertNotIn(".responsible_contributor_orig_published_changed.", page)
+        self.assertNotIn(".responsible_contributor_orig_private.", page)
+        self.assertNotIn(".responsible_contributor_orig_unreviewed.", page)
+        self.assertNotIn(".responsible_contributor_additional_orig_published.", page)
+        self.assertNotIn(".responsible_contributor_additional_orig_deleted.", page)
+        self.assertNotIn(".general_additional_orig_published.", page)
+        self.assertNotIn(".general_additional_orig_deleted.", page)
+
+
+        with run_in_staff_mode(self):
+            #contributor_id = UserProfile.objects.get(email="responsible@institution.example.com").id
+            page = self.app.get(
+                f"/results/semester/1/evaluation/1?view_contributor_results=personal",
+                user="manager@institution.example.com",
+            )
+            self.assertIn(".general_orig_published.", page)
+            self.assertNotIn(".general_orig_deleted.", page)
+            self.assertIn(".general_changed_published.", page)        
+            self.assertNotIn(".general_orig_published_changed.", page)
+            self.assertNotIn(".contributor_orig_published.", page)
+            self.assertNotIn(".contributor_orig_private.", page)
+            self.assertNotIn(".responsible_contributor_orig_published.", page)
+            self.assertNotIn(".responsible_contributor_orig_deleted.", page)
+            self.assertNotIn(".responsible_contributor_changed_published.", page)
+            self.assertNotIn(".responsible_contributor_orig_published_changed.", page)
+            self.assertNotIn(".responsible_contributor_orig_private.", page)
+            self.assertNotIn(".responsible_contributor_orig_unreviewed.", page)
+            self.assertNotIn(".responsible_contributor_additional_orig_published.", page)
+            self.assertNotIn(".responsible_contributor_additional_orig_deleted.", page)
+            self.assertIn(".general_additional_orig_published.", page)
+            self.assertNotIn(".general_additional_orig_deleted.", page)
+
 
 
 class TestResultsTextanswerVisibilityContributorRatingsView(WebTest):
@@ -1320,10 +1370,10 @@ class TestResultsTextanswerVisibilityContributorRatingsView(WebTest):
 
     def test_textanswer_visibility_for_student(self):
         page = self.app.get(
-            "/results/semester/1/evaluation/1??view_contributor_results=ratings", user="student@institution.example.com"
-        )
-
-        # identical to personal
+            "/results/semester/1/evaluation/1?view_contributor_results=ratings", 
+            user="student@institution.example.com")
+        
+        #identical to personal
         self.assertNotIn(".general_orig_published.", page)
         self.assertNotIn(".general_orig_deleted.", page)
         self.assertNotIn(".general_changed_published.", page)
@@ -1494,10 +1544,10 @@ class TestResultsTextanswerVisibilityContributorFullView(WebTest):
 
     def test_textanswer_visibility_for_student(self):
         page = self.app.get(
-            "/results/semester/1/evaluation/1??view_contributor_results=full", user="student@institution.example.com"
-        )
-
-        # identical to personal, con: ratings
+            "/results/semester/1/evaluation/1?view_contributor_results=full", 
+            user="student@institution.example.com")
+        
+        #identical to personal, con: ratings
         self.assertNotIn(".general_orig_published.", page)
         self.assertNotIn(".general_orig_deleted.", page)
         self.assertNotIn(".general_changed_published.", page)
@@ -1672,10 +1722,10 @@ class TestResultsTextanswerVisibilityGeneralFullView(WebTest):
 
     def test_textanswer_visibility_for_student(self):
         page = self.app.get(
-            "/results/semester/1/evaluation/1??view_general_text=full", user="student@institution.example.com"
-        )
-
-        # identical to personal, con: ratings, con: full
+            "/results/semester/1/evaluation/1?view_general_text=full", 
+            user="student@institution.example.com")
+        
+        #identical to personal, con: ratings, con: full
         self.assertNotIn(".general_orig_published.", page)
         self.assertNotIn(".general_orig_deleted.", page)
         self.assertNotIn(".general_changed_published.", page)
@@ -1844,10 +1894,10 @@ class TestResultsTextanswerVisibilityGeneralRatingsView(WebTest):
 
     def test_textanswer_visibility_for_student(self):
         page = self.app.get(
-            "/results/semester/1/evaluation/1??view_general_text=ratings", user="student@institution.example.com"
-        )
-
-        # identical to personal, con: ratings, con: full, gen: full
+            "/results/semester/1/evaluation/1?view_general_text=ratings", 
+            user="student@institution.example.com")
+        
+        #identical to personal, con: ratings, con: full, gen: full
         self.assertNotIn(".general_orig_published.", page)
         self.assertNotIn(".general_orig_deleted.", page)
         self.assertNotIn(".general_changed_published.", page)
@@ -2006,6 +2056,8 @@ class TestResultsTextanswerVisibilityForExportView(WebTest):
         self.assertNotIn(".responsible_contributor_changed_published.", page)
         self.assertNotIn(".responsible_contributor_orig_private.", page)
         self.assertNotIn(".responsible_contributor_orig_notreviewed.", page)
+
+# hier nicht mehr von uns
 
 
 class TestArchivedResults(WebTest):
