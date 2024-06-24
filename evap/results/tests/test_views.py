@@ -769,6 +769,50 @@ class TestResultsTextanswerVisibilityForManager(WebTestStaffMode):
         self.assertIn(".responsible_contributor_additional_orig_published.", page)
         self.assertNotIn(".responsible_contributor_additional_orig_hidden.", page)
 
+class TestResultsTextanswerVisibilityForStudent(WebTest):
+    fixtures = ["minimal_test_data_results"]
+
+    @classmethod
+    def setUpTestData(cls):
+        cache_results(Evaluation.objects.get(id=1))
+
+    def test_static(self, page):        
+        self.assertNotIn(".general_orig_published.", page)
+        self.assertNotIn(".general_orig_hidden.", page)
+        self.assertNotIn(".general_orig_published_changed.", page)
+        self.assertNotIn(".general_additional_orig_published.", page)
+        self.assertNotIn(".general_additional_orig_hidden.", page)
+        self.assertNotIn(".general_changed_published.", page)
+        self.assertNotIn(".contributor_orig_published.", page)
+        self.assertNotIn(".contributor_orig_private.", page)
+        self.assertNotIn(".responsible_contributor_orig_published.", page)
+        self.assertNotIn(".responsible_contributor_orig_hidden.", page)
+        self.assertNotIn(".responsible_contributor_orig_published_changed.", page)
+        self.assertNotIn(".responsible_contributor_changed_published.", page)
+        self.assertNotIn(".responsible_contributor_orig_private.", page)
+        self.assertNotIn(".responsible_contributor_orig_notreviewed.", page)
+        self.assertNotIn(".responsible_contributor_additional_orig_published.", page)
+        self.assertNotIn(".responsible_contributor_additional_orig_hidden.", page)
+
+    def test_textanswer_visibility_for_student(self):
+        #NOTE: default values for students are: view_general_text=ratings, view_contributor_results=ratings
+        general_views = ["full", "ratings"] 
+        contributor_views = ["full", "ratings", "personal"]
+
+        for general in general_views:
+            page = self.app.get(
+            f"/results/semester/1/evaluation/1?view_general_text={general}&view_contributor_results=ratings", 
+            user="student@institution.example.com")
+
+            self.test_static(page)
+        for contributor in contributor_views:
+            page = self.app.get(
+            f"/results/semester/1/evaluation/1?view_general_text=ratings&view_contributor_results={contributor}", 
+            user="student@institution.example.com")
+            
+            self.test_static(page) 
+            
+
 
 class TestResultsTextanswerVisibility(WebTest):
     fixtures = ["minimal_test_data_results"]
