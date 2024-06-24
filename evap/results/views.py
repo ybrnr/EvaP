@@ -400,9 +400,6 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
     if not evaluation.can_results_page_be_seen_by(request.user):
         raise PermissionDenied
 
-    # is das nicht mega dumm muss nicht ratings und full andersrum, wenn hier changed dann auch ganz viele Tests
-    # u.a.: test_default_view
-    # ham wa jz gemacht
     view_general_text = request.GET.get(
         "view_general_text",
         "full" if request.user.is_reviewer or request.user.is_responsible_or_contributor_or_delegate else "ratings",
@@ -433,17 +430,10 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
         view_as_user = contributor
     contributor_id = contributor.pk if contributor != request.user else None
 
-    # HIER NOCH NICHT VOLLSTÄNDIG
     represented_users = [view_as_user]
-    # if view_contributor_results != "personal":
-    # niklas hat gesagt is sehr wack das hier zu machen
-    # is das nicht Qutasch????
     represented_users += list(
         view_as_user.represented_users.all()
-    )  # das war einmal eingerückt unter dem auskommentierten if statement - joa nh?
-    # redirect to non-public view if there is none because the results have not been published
-    # if not evaluation.can_publish_rating_results and view == "public":
-    #    view = "full"
+    )
 
     return view_general_text, view_contributor_results, view_as_user, represented_users, contributor_id
 
@@ -451,7 +441,6 @@ def evaluation_detail_parse_get_parameters(request, evaluation):
 def extract_evaluation_answer_data(request, evaluation):
     # TextAnswerExporter wants a dict from Question to tuple of contributor_name and string list (of the answers)
 
-    # changed
     (
         view_general_text,
         view_contributor_results,
