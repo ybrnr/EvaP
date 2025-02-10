@@ -15,13 +15,13 @@
             {% include 'bootstrap_form_field_label.html' with field=field class='col-md-3 pe-4' %}
             <div class="col-md-7 card collapsible overflow-visible">
                 <div class="card-header d-flex">
-                    <a class="collapse-toggle collapsed"
+                    <a class="collapse-toggle {% if collapse_participants and evaluation.participants.count > 0 %}collapsed{% else %}show{% endif %}"
                         data-bs-toggle="collapse" href="#contributor-{{ contribution_result.contributor.id }}"
                         aria-controls="contributor-{{ contribution_result.contributor.id }}">
                     </a>
                     <span class="badge rounded-pill badge-btn ms-auto"> {{ evaluation.participants.count }} </span>
                 </div>
-                <div class="collapse {% if False %} show{% endif %}" id="contributor-{{ contribution_result.contributor.id }}">
+                <div class="{% if collapse_participants and evaluation.participants.count > 0 %}collapse{% else %}show{% endif %}" id="contributor-{{ contribution_result.contributor.id }}">
                     <div class="card-body">
                         {% include 'bootstrap_form_field_widget.html' with field=field %}
                     </div>
